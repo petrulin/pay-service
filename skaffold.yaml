@@ -1,0 +1,19 @@
+apiVersion: skaffold/v2beta17
+kind: Config
+metadata:
+  name: pay-service
+build:
+  local:
+    useBuildkit: true
+  artifacts:
+  - image: dev/pay-service
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - deployment.yaml
+portForward:
+- resourceType: service
+  resourceName: pay-service
+  port: 8040
