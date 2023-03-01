@@ -6,13 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
-public class PayResponse {
-    private String status;
+public class DishDTO {
+    private Long menuId;
+    private Long count;
 
 }

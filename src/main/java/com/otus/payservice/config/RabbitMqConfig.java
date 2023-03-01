@@ -15,9 +15,9 @@ public class RabbitMqConfig {
     private String queue;
     @Value("${spring.rabbitmq.exchanges.service-exchange}")
     private String exchange;
-    @Value("${spring.rabbitmq.queues.order-answer-queue}")
+    @Value("${spring.rabbitmq.queues.service-answer-queue}")
     private String orderAnswerQueue;
-    @Value("${spring.rabbitmq.exchanges.order-answer-exchange}")
+    @Value("${spring.rabbitmq.exchanges.service-answer-exchange}")
     private String orderAnswerExchange;
 
 

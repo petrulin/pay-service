@@ -12,6 +12,7 @@ import java.util.Objects;
 @ToString
 @Entity
 @Table(name = "payment", schema = "pay_service", catalog = "postgres")
+@NoArgsConstructor
 public class Payment {
 
     private static final BigDecimal AMOUNT_DEFAULT_VALUE = BigDecimal.ZERO;
@@ -28,7 +29,7 @@ public class Payment {
     @Column(name = "amount", nullable = false, precision = 2)
     private BigDecimal amount = AMOUNT_DEFAULT_VALUE;
 
-    @Column(name = "discount", nullable = false, precision = 2)
+    @Column(name = "discount", precision = 2)
     private BigDecimal discount = DISCOUNT_DEFAULT_VALUE;
 
     @Column(name = "success", nullable = false)
@@ -40,20 +41,20 @@ public class Payment {
     @Column(name = "currency", nullable = false)
     private Integer currency;
 
-    @Column(name = "client_id")
-    private Long clientId;
+    @Column(name = "user_name")
+    private String userName;
 
     @Column(name = "order_id")
     private Long orderId;
 
-    public Payment(BigDecimal amount, BigDecimal discount, Boolean success, Long clientId, Long orderId) {
+    public Payment(BigDecimal amount, BigDecimal discount, Boolean success, String userName, Long orderId, String paymentType) {
         this.paymentDate = LocalDateTime.now();
         this.currency = 933;
-        this.paymentType = "SALE";
+        this.paymentType = paymentType;
         this.amount = amount;
-        this.discount = discount;
+        setDiscount(discount);
         this.success = success;
-        this.clientId = clientId;
+        this.userName = userName;
         this.orderId = orderId;
     }
 

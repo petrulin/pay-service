@@ -6,19 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
-public class PayDTO {
-    private BigDecimal amount;
-
-    private BigDecimal discount;
-
+public class CancelDTO {
     private Long orderId;
-
-    private Long clientId;
 
 }

@@ -3,13 +3,15 @@ package com.otus.payservice.rabbitmq;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.otus.payservice.entity.Message;
 import com.otus.payservice.rabbitmq.domain.RMessage;
-import com.otus.payservice.rabbitmq.domain.dto.PayDTO;
+import com.otus.payservice.rabbitmq.domain.dto.CancelDTO;
+import com.otus.payservice.rabbitmq.domain.dto.TrxDTO;
 import com.otus.payservice.service.PaymentService;
 import com.otus.payservice.service.MessageService;
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,19 +26,19 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RabbitListener {
+public class QueueListener {
 
     private final MessageService messageService;
     private final PaymentService storageService;
     private final RabbitTemplate rt;
 
-    @Value("${spring.rabbitmq.queues.order-answer-queue}")
+    @Value("${spring.rabbitmq.queues.service-answer-queue}")
     private String answerQueue;
-    @Value("${spring.rabbitmq.exchanges.order-answer-exchange}")
+    @Value("${spring.rabbitmq.exchanges.service-answer-exchange}")
     private String answerExchange;
 
     @Transactional
-    @org.springframework.amqp.rabbit.annotation.RabbitListener(queues = "${spring.rabbitmq.queues.service-queue}", ackMode = "MANUAL")
+    @RabbitListener(queues = "${spring.rabbitmq.queues.service-queue}", ackMode = "MANUAL")
     public void orderQueueListener(RMessage message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) {
         try {
             var om = new ObjectMapper();
@@ -45,13 +47,20 @@ public class RabbitListener {
                 messageService.save(new Message(message.getMsgId()));
                 switch (message.getCmd()) {
                     case "sale" ->  {
-                        om.getTypeFactory().constructCollectionType(ArrayList.class, PayDTO.class);
-                        var payDTO = om.convertValue(message.getMessage(), PayDTO.class);
-                        var answer = storageService.sale(payDTO);
+                        om.getTypeFactory().constructCollectionType(ArrayList.class, TrxDTO.class);
+                        var trxDTO = om.convertValue(message.getMessage(), TrxDTO.class);
+                        var answer = storageService.sale(trxDTO);
+                        trxDTO.setPayStatus(answer);
                         rt.convertAndSend(answerExchange, answerQueue,
-                                new RMessage(UUID.randomUUID().toString(), "payAnswer", answer)
+                                new RMessage(UUID.randomUUID().toString(), "bookingFood", trxDTO)
                         );
                     }
+                    case "refund" ->  {
+                        om.getTypeFactory().constructCollectionType(ArrayList.class, CancelDTO.class);
+                        var cancelDTO = om.convertValue(message.getMessage(), CancelDTO.class);
+                        storageService.refund(cancelDTO);
+                    }
+
                     default -> log.warn("::PayService:: rabbitmq listener method. Unknown message type");
                 }
             }

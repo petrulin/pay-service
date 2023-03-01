@@ -1,10 +1,11 @@
 package com.otus.payservice.service;
 
-import com.otus.payservice.rabbitmq.domain.dto.PayDTO;
-import com.otus.payservice.rabbitmq.domain.dto.PayResponse;
+import com.otus.payservice.rabbitmq.domain.dto.CancelDTO;
+import com.otus.payservice.rabbitmq.domain.dto.TrxDTO;
 
 
 public interface PaymentService {
 
-    public PayResponse sale(PayDTO payDTO);
+    String sale(TrxDTO trxDTO);
+    void refund(CancelDTO cancelDTO);
 }

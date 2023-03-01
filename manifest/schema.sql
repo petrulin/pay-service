@@ -34,7 +34,7 @@ CREATE TABLE pay_service.payment (
    success bool NOT NULL,
    payment_type varchar(10) NOT NULL,
    currency int4 NOT NULL,
-   client_id int8 NOT NULL,
+   user_name varchar(50) NOT NULL,
    order_id int8 NOT NULL,
    CONSTRAINT payment_pkey PRIMARY KEY (id)
 );
