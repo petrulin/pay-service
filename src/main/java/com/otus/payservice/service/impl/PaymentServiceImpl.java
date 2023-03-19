@@ -38,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void refund(CancelDTO cancelDTO) {
+    public Payment refund(CancelDTO cancelDTO) {
         try {
             var originalPayment = paymentRepository.findByOrderId(cancelDTO.getOrderId());
             if (originalPayment != null) {
@@ -50,10 +50,13 @@ public class PaymentServiceImpl implements PaymentService {
                         originalPayment.getOrderId(),
                         "REFUND");
                 paymentRepository.save(payment);
+                return payment;
             }
+            return null;
         } catch (Exception e) {
             log.error("::PayService:: refund method orderQueueListener with error message {}", e.getLocalizedMessage());
             log.error("::PayService:: refund method orderQueueListener with stackTrace {}", ExceptionUtils.getStackTrace(e));
+            return null;
         }
     }
 

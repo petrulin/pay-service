@@ -20,6 +20,11 @@ public class RabbitMqConfig {
     @Value("${spring.rabbitmq.exchanges.service-answer-exchange}")
     private String orderAnswerExchange;
 
+    @Value("${spring.rabbitmq.queues.service-billing-queue}")
+    private String billingQueue;
+    @Value("${spring.rabbitmq.exchanges.service-billing-exchange}")
+    private String billingExchange;
+
 
     @Bean
     public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory) {
@@ -62,6 +67,21 @@ public class RabbitMqConfig {
     public Binding orderAnswerQueueSyncBinding() {
         return BindingBuilder.bind(orderAnswerQueue()).to(orderAnswerExchange()).with(orderAnswerQueue);
     }
+
+    @Bean
+    public DirectExchange billingExchange() {
+        return new DirectExchange(billingExchange, true, false);
+    }
+
+    @Bean
+    public Queue billingQueue() {
+        return new Queue(billingQueue, true, false, false);
+    }
+    @Bean
+    public Binding billingQueueBinding() {
+        return BindingBuilder.bind(billingQueue()).to(billingExchange()).with(billingQueue);
+    }
+
 
 
 }

@@ -17,9 +17,11 @@ spring:
     queues:
       service-queue: otus.pay.queue
       service-answer-queue: otus.store.queue
+      service-billing-queue: otus.billing.queue
     exchanges:
       service-exchange: otus.pay.exchange
       service-answer-exchange: otus.store.exchange
+      service-billing-exchange: otus.billing.exchange
   data:
     jpa:
       repositories:
